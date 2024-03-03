@@ -1,4 +1,5 @@
 import os
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -23,7 +24,7 @@ SITE_ID = 1
 
 WEBSITE_URL = 'http://localhost:8000'
 
-SIMPLE_JWT ={
+SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKEN": False,
@@ -50,12 +51,14 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
-    'http://127.0.0.1:3000'
+    'http://127.0.0.1:3000',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_HTTPONLY': False
+    "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False
 }
 
 
