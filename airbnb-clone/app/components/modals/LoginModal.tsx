@@ -15,10 +15,32 @@ const LoginModal = () => {
     const [email, setEmail] = useState('');
     const [password, setpassword] = useState('');
     const [errors, seterrors] = useState<String[]>([]);
+
+    const submitLogin = async () => {
+        const formData = {
+            email: email,
+            password: password,
+        }
+
+        const response = await apiService.post('/api/auth/login/', JSON.stringify(formData))
+
+        if (response.access) {
+            handleLogin(response.user.pk, response.access, response.refresh)
+
+            loginModal.close()
+
+            router.push('/')
+        } else {
+            seterrors(response.non_field_errors);
+        }
+    }
     
     const content = (
         <>
-            <form className="space-y-4">
+            <form 
+                className="space-y-4"
+                action={submitLogin}
+            >
                 <input onChange={(e) => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
                 
                 <input onChange={(e) => setpassword(e.target.value)} placeholder="Your password" type="password" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
@@ -36,7 +58,7 @@ const LoginModal = () => {
 
                 <CustomButton
                     label="Submit"
-                    onClick={() => console.log("Clicked")}
+                    onClick={submitLogin}
                 />
             
             </form>
