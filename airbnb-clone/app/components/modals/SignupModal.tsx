@@ -2,30 +2,72 @@
 
 import Modal from "./Modal";
 import { useState } from "react"
+import { useRouter } from "next/navigation";
 import useSignupModal from "@/app/hooks/useSignupModal";
 import CustomButton from "../forms/CustomButton";
+import apiService from "@/app/services/apiService";
+import { handleLogin } from "@/app/lib/actions";
 
 
 const SignupModal = () => {
-
+    const router = useRouter();
     const signupModal = useSignupModal()
+    const [email, setEmail] = useState('');
+    const [errors, seterrors] = useState<String[]>([]);
+    const [password1, setpassword1] = useState('');
+    const [password2, setpassword2] = useState('');
+
+    const submitSignup = async () => {
+        const formData = {
+            email: email,
+            password1: password1,
+            password2: password2
+        }
+
+        const response = await apiService.post('/api/auth/register/', JSON.stringify(formData))
+
+        if (response.access) {
+            handleLogin(response.user.pk, response.access, response.refresh)
+
+            signupModal.close()
+
+            router.push('/')
+        } else {
+            const tmpErrors: string[] = Object.values(response).map((error: any) => {
+                return error
+            })
+
+            seterrors(tmpErrors)
+        }
+    }
+
 
     const content = (
         <>
-            <form className="space-y-4">
-                <input placeholder="Your email" type="email" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
+            <form 
+                action={submitSignup}
+                className="space-y-4"
+            >
+                <input onChange={(e) => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
                 
-                <input placeholder="Your password" type="password" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
+                <input onChange={(e) => setpassword1(e.target.value)} placeholder="Your password" type="password" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
 
-                <input placeholder="Confirm password" type="password" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
+                <input onChange={(e) => setpassword2(e.target.value)} placeholder="Confirm password" type="password" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
 
-                <div className="p-5 bg-airbnb text-white rounded-xl opacity-80">
-                    Error message here
-                </div>
-
+                {errors.map((error, index) => {
+                    return (
+                        <div 
+                            key={`error_${index}`}
+                            className="p-5 bg-airbnb text-white rounded-xl opacity-80"
+                        >
+                        {error}
+                    </div>
+                    )
+                })}
+                
                 <CustomButton
                     label="Submit"
-                    onClick={() => console.log("Clicked")}
+                    onClick={submitSignup}
                 />
             
             </form>
