@@ -2,21 +2,51 @@
 
 import Modal from "./Modal";
 import { useState } from "react"
+import { useRouter } from "next/navigation";
 import useSignupModal from "@/app/hooks/useSignupModal";
 import CustomButton from "../forms/CustomButton";
+import apiService from "@/app/services/apiService";
 
 
 const SignupModal = () => {
+    const router = useRouter();
     const signupModal = useSignupModal()
     const [email, setEmail] = useState('');
     const [errors, seterrors] = useState<String[]>([]);
     const [password1, setpassword1] = useState('');
     const [password2, setpassword2] = useState('');
 
+    const submitSignup = async () => {
+        const formData = {
+            email: email,
+            password1: password1,
+            password2: password2
+        }
+
+        const response = await apiService.post('/api/auth/register/', formData)
+
+        if (response.access) {
+            // handleLogin will go here
+
+            signupModal.close()
+
+            router.push('/')
+        } else {
+            const tmpErrors: string[] = Object.values(response).map((error: any) => {
+                return error
+            })
+
+            seterrors(tmpErrors)
+        }
+    }
+
 
     const content = (
         <>
-            <form className="space-y-4">
+            <form 
+                action={submitSignup}
+                className="space-y-4"
+            >
                 <input onChange={(e) => setEmail(e.target.value)} placeholder="Your email" type="email" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
                 
                 <input onChange={(e) => setpassword1(e.target.value)} placeholder="Your password" type="password" className="w-full h-[54px] px-4 border border-gray-300 rounded-xl" />
@@ -36,7 +66,7 @@ const SignupModal = () => {
                 
                 <CustomButton
                     label="Submit"
-                    onClick={() => console.log("Clicked")}
+                    onClick={submitSignup}
                 />
             
             </form>
