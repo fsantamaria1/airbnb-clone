@@ -2,16 +2,46 @@
 
 import Image from "next/image";
 
+import { useState } from "react";
 import Modal from "./Modal";
-
+import Categories from "../addproperty/Categories";
 import useAddPropertyModalModal from "@/app/hooks/useAddPropertyModal";
+import CustomButton from "../forms/CustomButton";
 
 const AddPropertyModal = () => {
+    // States
+    const [currentStep, setCurrentStep] = useState(1);
+    const [dataCategory, setDataCategory] = useState('');
+
     const addPropertyModal = useAddPropertyModalModal();
+
+    // Set data values
+    const setCategory = (category: string) => {
+        setDataCategory(category)
+    }
+
 
     const content = (
         <>
-        <h2 className="mb-6 text-2xl">Choose category</h2>
+            {currentStep ==1? (
+                <>
+                    <h2 className="mb-6 text-2xl">Choose category</h2>
+
+                    <Categories
+                        dataCategory={dataCategory}
+                        setCategory={(category) => setCategory(category)}
+                    />
+
+                    <CustomButton
+                        label="Next"
+                        onClick={() => setCurrentStep(2)}
+                    />
+                </>
+            ): (
+                <p>Step 2</p>
+            )
+            }
+            
         </>
     )
 
