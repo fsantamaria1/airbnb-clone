@@ -9,9 +9,13 @@ import useAddPropertyModalModal from "@/app/hooks/useAddPropertyModal";
 import CustomButton from "../forms/CustomButton";
 import SelectCountry, { SelectCountryValue } from "../forms/SelectCountry";
 
+import apiService from "@/app/services/apiService";
+import { useRouter } from "next/navigation";
+
 const AddPropertyModal = () => {
     // States
     const [currentStep, setCurrentStep] = useState(1);
+    const [errors, setErrors] = useState<string[]>([]);
     const [dataCategory, setDataCategory] = useState('');
     const [dataTitle, setDataTitle] = useState('');
     const [dataDescription, setDataDescription] = useState('');
@@ -25,6 +29,7 @@ const AddPropertyModal = () => {
 
 
     const addPropertyModal = useAddPropertyModalModal();
+    const router = useRouter();
 
     // Set data values
     const setCategory = (category: string) => {
@@ -36,6 +41,46 @@ const AddPropertyModal = () => {
             const tmpImage = event.target.files[0];
 
             setDataImage(tmpImage);
+        }
+    }
+
+    const submitForm = async () => {
+
+        if (
+            dataCategory &&
+            dataTitle &&
+            dataDescription &&
+            dataPrice &&
+            dataCountry &&
+            dataImage
+        ) {
+            const formData = new FormData()
+            formData.append('category', dataCategory);
+            formData.append('title', dataTitle);
+            formData.append('description', dataDescription);
+            formData.append('price_per_night', dataPrice);
+            formData.append('bedrooms', dataBedrooms);
+            formData.append('bathrooms', dataBathrooms);
+            formData.append('guests', dataGuests);
+            formData.append('country', dataCountry.label);
+            formData.append('country_code', dataCountry.value);
+            formData.append('image', dataImage);
+
+            const response = await apiService.post('/api/properties/create/', formData);
+
+            if (response.success) {
+
+                router.push('/');
+
+                addPropertyModal.close();
+            } else {
+
+                const tmpErrors: string[] = Object.values(response).map((error: any) => {
+                    return error
+                } )
+
+                setErrors(tmpErrors)
+            }
         }
     }
 
@@ -196,6 +241,17 @@ const AddPropertyModal = () => {
                         )}
                     </div>
 
+                    {errors.map((error, index) => {
+                        return (
+                            <div
+                                key={index}
+                                className="p-5 mb-4 bg-airbnb text-white rounded-xl opacity-80"
+                            >
+                                {error}
+                            </div>
+                        )
+                    })}
+
                     <CustomButton
                         label="Previous"
                         className="mb-2 bg-black hover-bg:gray-800"
@@ -204,7 +260,7 @@ const AddPropertyModal = () => {
 
                     <CustomButton
                         label="Submit"
-                        onClick={() => console.log("Submit")}
+                        onClick={submitForm}
                     />
                 </>
             )
