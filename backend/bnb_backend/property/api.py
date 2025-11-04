@@ -29,5 +29,4 @@ def create_property(request):
 
         return JsonResponse({'success': True})
     else:
-        print('error', form.errors, form.non_field_errors)
         return JsonResponse({'errors': form.errors.as_json()}, status=400)
