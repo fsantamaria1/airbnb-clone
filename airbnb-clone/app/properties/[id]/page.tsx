@@ -18,30 +18,32 @@ const PropertyDetailPage = async ({params}: { params: {id: string}}) => {
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <div className="py-6 pr-6 col-span-3">
-                    <h1 className="mb-4 text-4xl">Property name</h1>
+                    <h1 className="mb-4 text-4xl">{property.title}</h1>
 
                     <span className="mb-6 block text-lg text-gray-600">
-                        4 guests - 2 bedroom - 1 bathroom
+                        {property.guests} guests - {property.bedrooms} bedrooms - {property.bathrooms} bathrooms
                     </span>
 
                     <hr />
 
                     <div className="py-6 flex items-center space-x-4">
-                        <Image
-                            src="/profile_pic_1.jpg"
-                            alt="User profile image"
-                            width={50}
-                            height={50}
-                            className="rounded-full"
-                        />
-                        <p><strong>John Doe</strong> is your host</p>
+                        {property.host.avatar_url &&
+                            <Image
+                                src={property.host.avatar_url}
+                                alt="User profile image"
+                                width={50}
+                                height={50}
+                                className="rounded-full"
+                            />
+                        }
+                        
+                        <p><strong>{property.host.name}</strong> is your host</p>
                     </div>
 
                     <hr />
 
                     <p className="mt-6 text-lg">
-                        Property description
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Vel consectetur tenetur ratione labore fugit repellat, ut quasi accusamus nisi, cumque saepe. Numquam voluptate natus nisi fugiat quaerat assumenda repellendus reiciendis?
+                        {property.description}
                     </p>
                 </div>
 
