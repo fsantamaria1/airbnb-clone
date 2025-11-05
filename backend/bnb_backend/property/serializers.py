@@ -22,11 +22,11 @@ class PropertiesDetailSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'title',
-            'description'
+            'description',
             'price_per_night',
             'image_url',
             'bedrooms',
             'bathrooms',
             'guests',
-            'host'
+            'host',
         )
